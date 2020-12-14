@@ -3,12 +3,14 @@ package com.example.androidsocials;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 
 import java.io.File;
 
@@ -25,6 +27,7 @@ public class PostImage extends AppCompatActivity {
     public static final String SWITCH_TAG = "SWITCH";
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +37,12 @@ public class PostImage extends AppCompatActivity {
         instaCb = (CheckBox) findViewById(R.id.instaCb);
         twitterCb = (CheckBox) findViewById(R.id.twitterCb);
         postButton = (Button) findViewById(R.id.btnPost);
+
+        ImageView imageView = findViewById(R.id.imageView);
+
+        Intent intent = getIntent();
+        Bitmap bitmap = (Bitmap) intent.getParcelableExtra(MainActivity.MOVE_IMAGE);
+        imageView.setImageBitmap(bitmap);
 
         fbCb.setOnClickListener(new View.OnClickListener() {
             @Override

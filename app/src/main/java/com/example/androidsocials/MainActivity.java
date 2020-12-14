@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton cameraBtn;
     public static final int LAUNCH_CAMERA_CODE = 502;
     public static final int IMPORT_IMAGE_CODE = 501;
+    public static final String MOVE_IMAGE="moveitpls";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        Bitmap bitmap;
         switch (requestCode){
             case IMPORT_IMAGE_CODE:{
                 if(resultCode == RESULT_OK) {
@@ -129,12 +132,18 @@ public class MainActivity extends AppCompatActivity {
                     // Get Extra from the intent
                     Bundle extras = data.getExtras();
                     // Get the returned image from extra
-                    Bitmap bmp = (Bitmap) extras.get("data");
-                    Log.d("TAKE_PHOTO_RESULT", "onActivityResult() returned: " + bmp);
+                    bitmap = (Bitmap) extras.get("data");
+                    Log.d("TAKE_PHOTO_RESULT", "onActivityResult() returned: " + bitmap);
                     /*Move to next Activity*/
+                    Intent i = new Intent(MainActivity.this, PostImage.class);
+                    i.putExtra(MOVE_IMAGE,bitmap);
+                    startActivity(i);
                 }
             }
         }
+
+
+
 
     }
 
