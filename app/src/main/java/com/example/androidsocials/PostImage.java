@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -40,59 +42,39 @@ public class PostImage extends AppCompatActivity {
 
         ImageView imageView = findViewById(R.id.imageView);
 
-        Intent intent = getIntent();
-        Bitmap bitmap = (Bitmap) intent.getParcelableExtra(MainActivity.MOVE_IMAGE);
-        imageView.setImageBitmap(bitmap);
+        String fName = getIntent().getStringExtra(MainActivity.MOVE_IMAGE);
+        String path = Environment.getExternalStorageDirectory() +"/" + fName + ".png";
+        Bitmap bm = BitmapFactory.decodeFile(path);
+        imageView.setImageBitmap(bm);
 
-        fbCb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(SWITCH_TAG, "FB switch state changed");
+
+
+        fbCb.setOnClickListener(v -> Log.d(SWITCH_TAG, "FB switch state changed"));
+
+        instaCb.setOnClickListener(v -> Log.d(SWITCH_TAG, "Insta switch state changed"));
+
+        twitterCb.setOnClickListener(v -> Log.d(SWITCH_TAG, "Twitter switch state changed"));
+
+
+        postButton.setOnClickListener(view -> Log.d(SWITCH_TAG,"*posting image...*"));
+
+        findViewById(R.id.btnPost).setOnClickListener(v -> {
+            Log.d("PostButton", "*Posting Image*...");
+            if(fbCb.isChecked()){
+                //facebookPost();
+                Log.d(POST_TAG, "Posting on facebook...");
             }
-        });
 
-        instaCb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(SWITCH_TAG, "Insta switch state changed");
+            if(instaCb.isChecked()){
+                //instaPost();
+                Log.d(POST_TAG, "Posting on instagram...");
             }
-        });
 
-        twitterCb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(SWITCH_TAG, "Twitter switch state changed");
+            if(twitterCb.isChecked()){
+                //twitterPost();
+                Log.d(POST_TAG, "Posting on twitter...");
             }
-        });
 
-
-        postButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(SWITCH_TAG,"*posting image...*");
-            }
-        });
-
-        findViewById(R.id.btnPost).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("PostButton", "*Posting Image*...");
-                if(fbCb.isChecked()){
-                    //facebookPost();
-                    Log.d(POST_TAG, "Posting on facebook...");
-                }
-
-                if(instaCb.isChecked()){
-                    //instaPost();
-                    Log.d(POST_TAG, "Posting on instagram...");
-                }
-
-                if(twitterCb.isChecked()){
-                    //twitterPost();
-                    Log.d(POST_TAG, "Posting on twitter...");
-                }
-
-            }
         });
     }
 
