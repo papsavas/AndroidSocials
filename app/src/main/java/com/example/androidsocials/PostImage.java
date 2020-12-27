@@ -14,11 +14,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.widget.ShareButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 public class PostImage extends AppCompatActivity {
@@ -29,6 +34,7 @@ public class PostImage extends AppCompatActivity {
     Button postButton;
     TextInputEditText caption;
     ToggleButton toggleButton;
+    ShareButton fbShareButton;
 
     public static final String POST_TAG = "POST";
     public static final String SWITCH_TAG = "SWITCH";
@@ -45,6 +51,7 @@ public class PostImage extends AppCompatActivity {
         twitterCb = (CheckBox) findViewById(R.id.twitterCb);
         postButton = (Button) findViewById(R.id.btnPost);
         toggleButton = (ToggleButton) findViewById(R.id.toggleButton);
+        fbShareButton = findViewById(R.id.fb_ShareBtn);
         caption = (TextInputEditText) findViewById(R.id.captionTxt);
         TextInputLayout textLayout = (TextInputLayout) findViewById(R.id.textInputLayout);
 
@@ -79,8 +86,13 @@ public class PostImage extends AppCompatActivity {
         twitterCb.setOnClickListener(v -> Log.d(SWITCH_TAG, "Twitter switch state changed"));
         postButton.setOnClickListener(view -> {
             Log.d("PostButton", "*Posting Image*...");
+
+            if(!(fbCb.isChecked() || instaCb.isChecked() || twitterCb.isChecked())){
+                Toast.makeText(getApplicationContext(), "You have to select at least one Social Media ", Toast.LENGTH_LONG).show();
+            }
+
             if(fbCb.isChecked()){
-                //facebookPost();
+                facebookPost(path);
                 Log.d(POST_TAG, "Posting on facebook...");
             }
 
@@ -108,26 +120,31 @@ public class PostImage extends AppCompatActivity {
 
     }
 
-    private void facebookPost() {
-        String type = "image/*";
-        String filename = "/myPhoto.jpg";
-        String mediaPath = "/path"; //Environment.getExternalStorageDirectory() + filename;
+    private void facebookPost(String imgPath) {
 
 
-        // Create the new Intent using the 'Send' action.
-        Intent share = new Intent(Intent.ACTION_SEND);
 
-        // Set the MIME type
-        share.setType(type);
+        byte[] data = null;
 
-        // Create the URI from the media
-        File media = new File(mediaPath);
-        Uri uri = Uri.fromFile(media);
+        Bitmap bi = BitmapFactory.decodeFile(imgPath);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bi.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        data = baos.toByteArray();
 
-        // Add the URI to the Intent.
-        share.putExtra(Intent.EXTRA_STREAM, uri);
+        Bundle params = new Bundle();
+        params.putString("method", "photos.upload");
+        params.putByteArray("picture", data);
+        params.putString("caption", "description here");
 
-        // Broadcast the Intent.
-        startActivity(Intent.createChooser(share, "Share to"));
+
+        SharePhoto sharePhoto = new SharePhoto.Builder()
+                .setBitmap(bi)
+                .build();
+
+        SharePhotoContent sharePhotoContent = new SharePhotoContent.Builder()
+                .addPhoto(sharePhoto)
+                .build();
+
+        fbShareButton.setShareContent(sharePhotoContent);
     }
 }

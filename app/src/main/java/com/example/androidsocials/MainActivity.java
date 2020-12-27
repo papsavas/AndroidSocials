@@ -19,12 +19,25 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,16 +48,39 @@ public class MainActivity extends AppCompatActivity {
     public static final int LAUNCH_CAMERA_CODE = 502;
     public static final int IMPORT_IMAGE_CODE = 501;
     public static final String MOVE_IMAGE = "moveitpls";
+    private LoginButton fbLogInBtn;
+    private CallbackManager callbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        callbackManager = CallbackManager.Factory.create();
+        fbLogInBtn = findViewById(R.id.fb_login_button);
+        //fbLogInBtn.setPermissions(Arrays.asList("Instagram Public Content Access", "instagram_basic","instagram_manage_comments"));
+
         postButton = (FloatingActionButton) findViewById(R.id.postBtn);
         searchButton = (FloatingActionButton) findViewById(R.id.searchButton);
         uploadBtn = (FloatingActionButton) findViewById(R.id.uploadBtn);
         cameraBtn = (FloatingActionButton) findViewById(R.id.cameraBtn);
+
+        fbLogInBtn.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d("FB_LOGIN_SUCCESS", "login Result is: "+loginResult);
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d("FB_LOGIN_CANCELLED", "login Result is: CANCELLED");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d("FB_LOGIN_ERROR", error.toString());
+            }
+        });
 
         postButton.setOnClickListener(v -> {
             Log.d("POST", "CREATE POST");
@@ -122,9 +158,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        callbackManager.onActivityResult(requestCode,resultCode,data);
         super.onActivityResult(requestCode, resultCode, data);
+
+        GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
+                (object, response) -> Log.d("GRAPH_ON_COMPLETED", "onCompleted: "+object.toString()));
+
+        Bundle bundle = new Bundle();
+        bundle.putString("fields", "name");
+
+        graphRequest.setParameters(bundle);
+        graphRequest.executeAsync();
+
+
         Bitmap bitmap;
         switch (requestCode){
             case IMPORT_IMAGE_CODE: case LAUNCH_CAMERA_CODE:{
@@ -152,12 +202,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
-
-
     }
 
 
+    AccessTokenTracker accessTokenTracker = new AccessTokenTracker() {
+        @Override
+        protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+            if(currentAccessToken==null){
+                LoginManager.getInstance().logOut();
+            }
+        }
+    };
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        accessTokenTracker.stopTracking();
+    }
 }
