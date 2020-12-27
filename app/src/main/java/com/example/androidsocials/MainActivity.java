@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         callbackManager.onActivityResult(requestCode,resultCode,data);
         super.onActivityResult(requestCode, resultCode, data);
-
+/*
         GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
                 (object, response) -> Log.d("GRAPH_ON_COMPLETED", "onCompleted: "+object.toString()));
 
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
         graphRequest.setParameters(bundle);
         graphRequest.executeAsync();
-
+*/
 
         Bitmap bitmap;
         switch (requestCode){
@@ -199,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
             }
             default:{
                 bitmap=null;
+
             }
         }
 
