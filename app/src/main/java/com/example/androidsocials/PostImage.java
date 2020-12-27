@@ -23,12 +23,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 
+import twitter4j.*;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.UploadedMedia;
+import twitter4j.auth.Authorization;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class PostImage extends AppCompatActivity {
@@ -58,56 +60,37 @@ public class PostImage extends AppCompatActivity {
         Bitmap bm = BitmapFactory.decodeFile(imagePath);
         imageView.setImageBitmap(bm);
 
-        ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setOAuthConsumerKey(String.valueOf(R.string.twitter_consumer_key));
-        cb.setOAuthConsumerSecret(String.valueOf(R.string.twitter_consumer_secret));
-        cb.setOAuthAccessToken(String.valueOf(R.string.twitter_access_token));
-        cb.setOAuthAccessTokenSecret(String.valueOf(R.string.twitter_access_token_secret));
 
-        TwitterFactory tf = new TwitterFactory(cb.build());
-        twitter = tf.getInstance();
 
-        twitterBtn.setOnClickListener(v -> postToTwitter(imagePath));
+        twitterBtn.setOnClickListener(v -> {
+            try {
+                new TwitterHandler().execute(imagePath);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
         modeButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
                 Log.d("POST_AS", "Posting on Story");
                 caption.setText(null);
                 textLayout.setVisibility(View.GONE);
-                //fbShareButton.setText("Post Story");
                 fbShareButton.setTextKeepState("Post Story");
             }
             else{
                 Log.d("POST_AS", "Posting on Timeline");
                 textLayout.setVisibility(View.VISIBLE);
-                //fbShareButton.setText("Post Picture");
                 fbShareButton.setTextKeepState("Post Picture");
             }
         });
         SharePhotoContent sharePhotoContent = postToFacebook(imagePath);
         fbShareButton.setShareContent(sharePhotoContent);
 
+
+
     }
 
 
-
-
-    private void postToTwitter(String imagePath){
-
-        try
-        {
-            StatusUpdate status = new StatusUpdate("Τεστ Τεξτ");
-            status.setMedia(new File(imagePath));
-            //twitter.updateStatus(status);
-
-            Log.d("FAVORITES", twitter.getFavorites().toString());
-        }
-        catch (TwitterException te)
-        {
-            Log.e("postToTwitter", "Error: "+ te.getMessage());
-        }
-
-    }
 
     private void instaPost() {
 
