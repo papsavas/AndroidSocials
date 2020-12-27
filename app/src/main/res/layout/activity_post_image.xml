@@ -6,23 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".PostImage">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="0dp"
-        android:layout_height="319dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@tools:sample/avatars" />
-
     <Button
         android:id="@+id/btnPost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="32dp"
         android:text="Post"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -30,59 +18,100 @@
 
     <CheckBox
         android:id="@+id/fbCb"
-        style="@android:style/Widget.DeviceDefault.Light.CompoundButton.CheckBox"
+        style="@android:style/Widget.CompoundButton.CheckBox"
         android:layout_width="42dp"
         android:layout_height="42dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/com_facebook_favicon_blue"
         android:breakStrategy="balanced"
-        android:button="@android:drawable/checkbox_off_background"
-        android:buttonTint="#3E3E3E"
         android:checked="false"
+        android:clickable="true"
         android:gravity="top|left"
         android:hapticFeedbackEnabled="true"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
-
-    <CheckBox
-        android:id="@+id/instaCb"
-        style="@android:style/Widget.DeviceDefault.Light.CompoundButton.CheckBox"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/ic_launcher_background"
-        android:button="@android:drawable/checkbox_off_background"
-        android:buttonTint="#3E3E3E"
-        android:gravity="top|left"
-        app:layout_constraintStart_toStartOf="@+id/fbCb"
-        app:layout_constraintTop_toBottomOf="@+id/fbCb" />
+        app:layout_constraintBottom_toBottomOf="@+id/instaCb"
+        app:layout_constraintEnd_toStartOf="@+id/instaCb"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/instaCb" />
 
     <CheckBox
         android:id="@+id/twitterCb"
+        style="@android:style/Widget.CompoundButton.CheckBox"
         android:layout_width="42dp"
         android:layout_height="42dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/com_facebook_button_send_background"
-        android:button="@android:drawable/checkbox_off_background"
         android:buttonTint="#3E3E3E"
+        android:clickable="true"
         android:gravity="top|left"
-        app:layout_constraintStart_toStartOf="@+id/instaCb"
-        app:layout_constraintTop_toBottomOf="@+id/instaCb" />
+        android:hapticFeedbackEnabled="true"
+        app:layout_constraintBottom_toBottomOf="@+id/toggleButton"
+        app:layout_constraintEnd_toStartOf="@+id/toggleButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/instaCb"
+        app:layout_constraintTop_toTopOf="@+id/toggleButton" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="259dp"
-        android:layout_height="170dp"
-        android:layout_marginStart="32dp"
+    <CheckBox
+        android:id="@+id/instaCb"
+        style="@android:style/Widget.CompoundButton.CheckBox"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/ic_launcher_background"
+        android:buttonTint="#3E3E3E"
+        android:clickable="true"
+        android:gravity="top|left"
+        android:hapticFeedbackEnabled="true"
         app:layout_constraintBottom_toBottomOf="@+id/twitterCb"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintEnd_toStartOf="@+id/twitterCb"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/fbCb"
-        app:layout_constraintTop_toTopOf="@+id/fbCb">
+        app:layout_constraintTop_toTopOf="@+id/twitterCb" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnPost"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
+        tools:src="@tools:sample/avatars" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout"
+        android:layout_width="267dp"
+        android:layout_height="102dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/twitterCb">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/captionTxt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="hint" />
+            android:hint="Add a Caption" />
+
     </com.google.android.material.textfield.TextInputLayout>
+
+    <ToggleButton
+        android:id="@+id/toggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:button="@android:drawable/ic_menu_gallery"
+        android:checked="false"
+        android:text="ToggleButton"
+        android:textOff="Timeline"
+        android:textOn="Story"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

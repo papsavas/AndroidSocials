@@ -8,22 +8,27 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.ToggleButton;
+
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
 
 public class PostImage extends AppCompatActivity {
 
-    public static CheckBox fbCb;
-    public static CheckBox instaCb;
-    public static CheckBox twitterCb;
-    public static Button postButton;
-    //textbox
-    //image
+    CheckBox fbCb;
+    CheckBox instaCb;
+    CheckBox twitterCb;
+    Button postButton;
+    TextInputEditText caption;
+    ToggleButton toggleButton;
 
     public static final String POST_TAG = "POST";
     public static final String SWITCH_TAG = "SWITCH";
@@ -39,6 +44,9 @@ public class PostImage extends AppCompatActivity {
         instaCb = (CheckBox) findViewById(R.id.instaCb);
         twitterCb = (CheckBox) findViewById(R.id.twitterCb);
         postButton = (Button) findViewById(R.id.btnPost);
+        toggleButton = (ToggleButton) findViewById(R.id.toggleButton);
+        caption = (TextInputEditText) findViewById(R.id.captionTxt);
+        TextInputLayout textLayout = (TextInputLayout) findViewById(R.id.textInputLayout);
 
         ImageView imageView = findViewById(R.id.imageView);
 
@@ -48,17 +56,28 @@ public class PostImage extends AppCompatActivity {
         imageView.setImageBitmap(bm);
 
 
+        toggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+            if(isChecked){
+                Log.d("POST_AS", "Posting on Story");
+                //disableText();
+                caption.setText(null);
+                textLayout.setVisibility(View.GONE);
+                caption.setVisibility(View.GONE);
+
+            }
+            else{
+                Log.d("POST_AS", "Posting on Timeline");
+                //enableText();
+                textLayout.setVisibility(View.VISIBLE);
+                caption.setVisibility(View.VISIBLE);
+            }
+        });
 
         fbCb.setOnClickListener(v -> Log.d(SWITCH_TAG, "FB switch state changed"));
-
         instaCb.setOnClickListener(v -> Log.d(SWITCH_TAG, "Insta switch state changed"));
-
         twitterCb.setOnClickListener(v -> Log.d(SWITCH_TAG, "Twitter switch state changed"));
-
-
-        postButton.setOnClickListener(view -> Log.d(SWITCH_TAG,"*posting image...*"));
-
-        findViewById(R.id.btnPost).setOnClickListener(v -> {
+        postButton.setOnClickListener(view -> {
             Log.d("PostButton", "*Posting Image*...");
             if(fbCb.isChecked()){
                 //facebookPost();
@@ -76,6 +95,7 @@ public class PostImage extends AppCompatActivity {
             }
 
         });
+
     }
 
 

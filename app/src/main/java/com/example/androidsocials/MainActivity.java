@@ -30,18 +30,29 @@ public class MainActivity extends AppCompatActivity {
 
     FloatingActionButton uploadBtn;
     FloatingActionButton cameraBtn;
+    FloatingActionButton postButton;
+    FloatingActionButton searchButton;
     public static final int LAUNCH_CAMERA_CODE = 502;
     public static final int IMPORT_IMAGE_CODE = 501;
-    public static final String MOVE_IMAGE="moveitpls";
+    public static final String MOVE_IMAGE = "moveitpls";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        postButton = (FloatingActionButton) findViewById(R.id.postBtn);
+        searchButton = (FloatingActionButton) findViewById(R.id.searchButton);
         uploadBtn = (FloatingActionButton) findViewById(R.id.uploadBtn);
         cameraBtn = (FloatingActionButton) findViewById(R.id.cameraBtn);
 
+        postButton.setOnClickListener(v -> {
+            Log.d("POST", "CREATE POST");
+        });
+
+        searchButton.setOnClickListener(v -> {
+            Log.d("SEARCH", "SEARCH TWEETS");
+        });
 
         uploadBtn.setOnClickListener(v -> {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
@@ -69,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void importImage() {
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, IMPORT_IMAGE_CODE);
     }
