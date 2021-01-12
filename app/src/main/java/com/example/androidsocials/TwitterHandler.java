@@ -1,45 +1,64 @@
 package com.example.androidsocials;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.File;
+import java.util.Date;
 
-import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import twitter4j.UploadedMedia;
-import twitter4j.User;
-import twitter4j.auth.Authorization;
 import twitter4j.conf.ConfigurationBuilder;
 
-public class TwitterHandler extends AsyncTask<String, Void, Void> {
+public class TwitterHandler extends AsyncTask<String, Void, Twitter> {
+    private String api_key;
+    private String api_secret;
+    private String access_token;
+    private String access_token_secret;
+
+    public TwitterHandler(String api_key, String api_secret, String access_token, String access_token_secret){
+        this.api_key = api_key;
+        this.api_secret = api_secret;
+        this.access_token = access_token;
+        this.access_token_secret = access_token_secret;
+
+    };
 
     @Override
-    protected Void doInBackground(String... strings) {
-        try{
-            ConfigurationBuilder cb = new ConfigurationBuilder();
-            cb.setDebugEnabled(true)
-                    .setOAuthConsumerKey(String.valueOf(R.string.twitter_consumer_key))
-                    .setOAuthConsumerSecret(String.valueOf(R.string.twitter_consumer_secret))
-                    .setOAuthAccessToken(String.valueOf(R.string.twitter_access_token))
-                    .setOAuthAccessTokenSecret(String.valueOf(R.string.twitter_access_token_secret));
-
-            TwitterFactory tf = new TwitterFactory(cb.build());
-            Twitter twitter = tf.getInstance();
-            //twitter.setOAuthConsumer(String.valueOf(R.string.twitter_consumer_key), String.valueOf(R.string.twitter_consumer_secret));
-            User user = twitter.verifyCredentials();
-            String statusMessage = "testing #blessed";
-            File file = new File(strings[0]);
-            StatusUpdate status = new StatusUpdate(statusMessage);
+    protected Twitter doInBackground(String... strings) {
+        Log.d("TWITTER_USER", api_key +'\n'+ api_secret +'\n'+ access_token +'\n'+ access_token_secret);
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setDebugEnabled(true)
+        .setOAuthConsumerKey(api_key)
+        .setOAuthConsumerSecret(api_secret)
+        .setOAuthAccessToken(access_token)
+        .setOAuthAccessTokenSecret(access_token_secret);
+        TwitterFactory tf = new TwitterFactory(cb.build());
+        Twitter twitter = tf.getInstance();
+        try {
+            File file = new File(PostImage.imagePath);
+            StatusUpdate status = new StatusUpdate(String.valueOf(new Date().getTime()));
             status.setMedia(file); // set the image to be uploaded here.
             twitter.updateStatus(status);
-        }
-        catch (TwitterException e){
+        } catch (TwitterException e) {
+
             e.printStackTrace();
         }
-        return null;
+        return twitter;
+
     }
 
+    @Override
+    protected void onPostExecute(Twitter twitter) {
+        Log.d("TWITTER_STATUS", String.valueOf(twitter));
+        /*
+        File file = new File(PostImage.imagePath);
+        StatusUpdate status = new StatusUpdate("testing #blessed");
+        status.setMedia(file); // set the image to be uploaded here.
+        */
+
+
+    }
 }
