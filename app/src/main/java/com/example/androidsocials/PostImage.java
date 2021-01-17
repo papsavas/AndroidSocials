@@ -1,9 +1,15 @@
 package com.example.androidsocials;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -11,16 +17,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
-import com.facebook.share.widget.ShareButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -29,63 +34,71 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-
-import twitter4j.*;
-import twitter4j.Status;
-import twitter4j.StatusUpdate;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.UploadedMedia;
-import twitter4j.auth.Authorization;
-import twitter4j.conf.ConfigurationBuilder;
 
 public class PostImage extends AppCompatActivity {
 
     TextInputEditText caption;
-    ToggleButton modeButton;
+    ToggleButton storyMode;
     Button fbShareButton;
     Button twitterBtn;
+    Button instaButton;
     static String imagePath;
+    static String captionText;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_image);
-
-        modeButton = (ToggleButton) findViewById(R.id.toggleButton);
+        storyMode = (ToggleButton) findViewById(R.id.toggleButton);
         fbShareButton = findViewById(R.id.fb_ShareBtn);
         twitterBtn = findViewById(R.id.twitterBtn);
+        instaButton = findViewById(R.id.instaBtn);
         caption = (TextInputEditText) findViewById(R.id.captionTxt);
         TextInputLayout textLayout = (TextInputLayout) findViewById(R.id.textInputLayout);
-
         ImageView imageView = findViewById(R.id.imageView);
-
         String fName = getIntent().getStringExtra(MainActivity.MOVE_IMAGE);
         imagePath = Environment.getExternalStorageDirectory() +"/" + fName + ".png";
         Bitmap bm = BitmapFactory.decodeFile(imagePath);
         imageView.setImageBitmap(bm);
 
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+
 
 
         twitterBtn.setOnClickListener(v -> {
-            //tempTwitter();
-            TwitterHandler twHandler = new TwitterHandler(
+            if(storyMode.isChecked()){
+                postFleet();
+            }
+            else{
+                TwitterHandler twHandler = new TwitterHandler(
                         getString(R.string.twitter_api_key),
                         getString(R.string.twitter_api_key_secret),
                         getString(R.string.twitter_access_token),
                         getString(R.string.twitter_access_token_secret)
-                    );
-            twHandler.execute();
+                );
+                captionText = caption.getText().toString();
+                twHandler.execute();
+            }
 
         });
 
-        modeButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        instaButton.setOnClickListener(v-> {
+            if(storyMode.isChecked()){
+                Log.d("INSTA", "Insta Story");
+                instaStory(imagePath);
+            }
+            else{
+                Log.d("INSTA", "Insta Post");
+
+            }
+        });
+
+        storyMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
                 Log.d("POST_AS", "Posting on Story");
                 caption.setText(null);
@@ -110,28 +123,28 @@ public class PostImage extends AppCompatActivity {
 
     }
 
-    private void tempTwitter(){
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+    private void postFleet(){
+        Intent tweetIntent = new Intent(Intent.ACTION_SEND);
+        tweetIntent.putExtra(Intent.EXTRA_TEXT, "This is a Test.");
+        tweetIntent.setType("text/plain");
 
-        StrictMode.setThreadPolicy(policy);
+        PackageManager packManager = getPackageManager();
+        List<ResolveInfo> resolvedInfoList = packManager.queryIntentActivities(tweetIntent,  PackageManager.MATCH_DEFAULT_ONLY);
 
-        ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true);
-        cb.setOAuthConsumerKey(getString(R.string.twitter_api_key));
-        cb.setOAuthConsumerSecret(getString(R.string.twitter_api_key_secret));
-        cb.setOAuthAccessToken(getString(R.string.twitter_access_token));
-        cb.setOAuthAccessTokenSecret(getString(R.string.twitter_access_token_secret));
-        TwitterFactory tf = new TwitterFactory(cb.build());
-        Twitter twitter = tf.getInstance();
-        File file = new File(imagePath);
-        StatusUpdate status = new StatusUpdate("testing #blessed");
-        status.setMedia(file); // set the image to be uploaded here.
-        try {
-            //twitter.updateStatus("First Tweet");
-            twitter.updateStatus(status);
-        } catch (TwitterException e) {
-
-            e.printStackTrace();
+        boolean resolved = false;
+        for(ResolveInfo resolveInfo: resolvedInfoList){
+            if(resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")){
+                tweetIntent.setClassName(
+                        resolveInfo.activityInfo.packageName,
+                        resolveInfo.activityInfo.name );
+                resolved = true;
+                break;
+            }
+        }
+        if(resolved){
+            startActivity(tweetIntent);
+        }else{
+            Toast.makeText(this, "Twitter app isn't found", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -154,7 +167,26 @@ public class PostImage extends AppCompatActivity {
         }
     }
 
-
+    private void instaStory(String imagePath){
+        File imgFile = new File(imagePath);
+        Uri imgUri = Uri.fromFile(imgFile);
+        Intent intent = getPackageManager().getLaunchIntentForPackage("com.instagram.android");
+        if (intent != null) {
+            Intent shareIntent = new Intent("com.instagram.share.ADD_TO_STORY");
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.setPackage("com.instagram.android");
+            shareIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+            shareIntent.setType("image/jpeg");
+            startActivity(shareIntent);
+        } else {
+            // bring user to the market to download the app.
+            // or let them choose an app
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("market://details?id=" + "com.instagram.android"));
+            startActivity(intent);
+        }
+    }
     private void instaPost() {
 
     }
