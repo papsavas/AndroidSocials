@@ -1,15 +1,9 @@
 package com.example.androidsocials;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -17,41 +11,31 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.login.LoginManager;
-import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.widget.ShareButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 
 public class PostImage extends AppCompatActivity {
 
     TextInputEditText caption;
     ToggleButton storyMode;
-    Button fbShareButton;
+    ShareButton fbShareButton;
     Button twitterBtn;
     Button instaButton;
-    static String imagePath;
-    static String captionText;
-
+    public static String imagePath;
+    public static String captionText;
+    IntentHandler intentHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        intentHandler = new IntentHandler(PostImage.this);
         setContentView(R.layout.activity_post_image);
         storyMode = (ToggleButton) findViewById(R.id.toggleButton);
         fbShareButton = findViewById(R.id.fb_ShareBtn);
@@ -68,11 +52,9 @@ public class PostImage extends AppCompatActivity {
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
 
-
-
         twitterBtn.setOnClickListener(v -> {
             if(storyMode.isChecked()){
-                postFleet();
+                intentHandler.launchTwitter();
             }
             else{
                 TwitterHandler twHandler = new TwitterHandler(
@@ -81,7 +63,7 @@ public class PostImage extends AppCompatActivity {
                         getString(R.string.twitter_access_token),
                         getString(R.string.twitter_access_token_secret)
                 );
-                captionText = caption.getText().toString();
+                captionText = Objects.requireNonNull(caption.getText()).toString();
                 twHandler.execute();
             }
 
@@ -90,7 +72,7 @@ public class PostImage extends AppCompatActivity {
         instaButton.setOnClickListener(v-> {
             if(storyMode.isChecked()){
                 Log.d("INSTA", "Insta Story");
-                instaStory(imagePath);
+                intentHandler.instaStory(imagePath);
             }
             else{
                 Log.d("INSTA", "Insta Post");
@@ -111,44 +93,17 @@ public class PostImage extends AppCompatActivity {
                 fbShareButton.setTextKeepState("Post Picture");
             }
         });
-        SharePhotoContent sharePhotoContent = postToFacebook(imagePath);
-        //fbShareButton.setShareContent(sharePhotoContent);
 
+        SharePhotoContent sharePhotoContent = intentHandler.postPictureToFacebook(imagePath);
+        fbShareButton.setShareContent(sharePhotoContent);
+/*
         fbShareButton.setOnClickListener(v->{
-            postFBwithGraphAPI();
+            intentHandler.postPictureToFacebook(imagePath);
 
-        });
-
-
-
+        });*/
     }
 
-    private void postFleet(){
-        Intent tweetIntent = new Intent(Intent.ACTION_SEND);
-        tweetIntent.putExtra(Intent.EXTRA_TEXT, "This is a Test.");
-        tweetIntent.setType("text/plain");
-
-        PackageManager packManager = getPackageManager();
-        List<ResolveInfo> resolvedInfoList = packManager.queryIntentActivities(tweetIntent,  PackageManager.MATCH_DEFAULT_ONLY);
-
-        boolean resolved = false;
-        for(ResolveInfo resolveInfo: resolvedInfoList){
-            if(resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")){
-                tweetIntent.setClassName(
-                        resolveInfo.activityInfo.packageName,
-                        resolveInfo.activityInfo.name );
-                resolved = true;
-                break;
-            }
-        }
-        if(resolved){
-            startActivity(tweetIntent);
-        }else{
-            Toast.makeText(this, "Twitter app isn't found", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void postFBwithGraphAPI() {
+    /*private void postFBwithGraphAPI() {
         GraphRequest request = null;
         try {
             AccessToken accessToken = AccessToken.getCurrentAccessToken();
@@ -165,54 +120,6 @@ public class PostImage extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    private void instaStory(String imagePath){
-        File imgFile = new File(imagePath);
-        Uri imgUri = Uri.fromFile(imgFile);
-        Intent intent = getPackageManager().getLaunchIntentForPackage("com.instagram.android");
-        if (intent != null) {
-            Intent shareIntent = new Intent("com.instagram.share.ADD_TO_STORY");
-            shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.setPackage("com.instagram.android");
-            shareIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
-            shareIntent.setType("image/jpeg");
-            startActivity(shareIntent);
-        } else {
-            // bring user to the market to download the app.
-            // or let them choose an app
-            intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse("market://details?id=" + "com.instagram.android"));
-            startActivity(intent);
-        }
-    }
-    private void instaPost() {
-
-    }
-
-    private SharePhotoContent postToFacebook(String imgPath) {
-        byte[] data = null;
-
-        Bitmap bi = BitmapFactory.decodeFile(imgPath);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bi.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        data = baos.toByteArray();
-
-        Bundle params = new Bundle();
-        params.putString("method", "photos.upload");
-        params.putByteArray("picture", data);
-        params.putString("caption", "description here");
-
-        SharePhoto sharePhoto = new SharePhoto.Builder()
-                .setBitmap(bi)
-                //.setCaption("Test Caption")
-                .build();
-
-        return new SharePhotoContent.Builder()
-                .addPhoto(sharePhoto)
-                .build();
-
-
-    }
 }
