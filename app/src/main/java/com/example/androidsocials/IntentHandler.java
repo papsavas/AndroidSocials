@@ -73,9 +73,9 @@ public class IntentHandler {
 
     }
 
-    public void launchTwitter(){
+    public void launchTwitter(String text){
         Intent tweetIntent = new Intent(Intent.ACTION_SEND);
-        tweetIntent.putExtra(Intent.EXTRA_TEXT, "This is a Test.");
+        tweetIntent.putExtra(Intent.EXTRA_TEXT, text);
         tweetIntent.setType("text/plain");
 
         PackageManager packManager = activity.getPackageManager();

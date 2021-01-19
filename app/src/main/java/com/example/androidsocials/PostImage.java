@@ -54,7 +54,7 @@ public class PostImage extends AppCompatActivity {
 
         twitterBtn.setOnClickListener(v -> {
             if(storyMode.isChecked()){
-                intentHandler.launchTwitter();
+                //intentHandler.launchTwitter(captionText);
             }
             else{
                 TwitterHandler twHandler = new TwitterHandler(

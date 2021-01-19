@@ -84,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
 
         postButton.setOnClickListener(v -> {
             Log.d("POST", "CREATE POST");
+            Intent i = new Intent(MainActivity.this, CreateStatus.class);
+            startActivity(i);
         });
 
         searchButton.setOnClickListener(v -> {
