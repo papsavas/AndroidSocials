@@ -78,9 +78,9 @@ public class CreateStatus extends AppCompatActivity {
 
     public void postFBStatus(String status) throws JSONException {
         AccessToken accessToken = new AccessToken(
-                "EAAF9L78UyMEBAL2k7t0YqZCHJ9SZAFffNfWIh2SjeZCqpOiAjDxNTgyXgzGjVnunQVdgGfn9mKroVQIzJ2jvWNPEdu18KqqXc9Bi4x30Yth2cuc87xBZCIfRyNMtRAZAWXNsx1n34kw4ocKCQUOGrh1vlihs1F8mzf3BZBrkyZB4NFJJg21pEPG",
-                "419118999455937",
-                "105083264804153",
+                getString(R.string.fb_page_access_token),
+                getString(R.string.facebook_app_id),
+                getString(R.string.fb_page_id),
                 null,null,null,null,null,null,null
         );
         GraphRequest request = GraphRequest.newPostRequest(
