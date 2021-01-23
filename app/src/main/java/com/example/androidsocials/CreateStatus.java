@@ -43,7 +43,7 @@ public class CreateStatus extends AppCompatActivity {
         //fbButton.setShareContent(sharePhotoContent);
 
         fbButton.setOnClickListener(v -> {
-            copyText("fbStatus", caption);
+            //copyText("fbStatus", caption);
             try {
                 postFBStatus(caption.getText().toString());
             } catch (JSONException e) {
@@ -90,7 +90,7 @@ public class CreateStatus extends AppCompatActivity {
                 new GraphRequest.Callback() {
                     @Override
                     public void onCompleted(GraphResponse response) {
-                        Log.d("fbStatus", response.toString());
+                        Toast.makeText(CreateStatus.this, "Status Posting Completed!", Toast.LENGTH_LONG);
                     }
                 });
         request.executeAsync();
