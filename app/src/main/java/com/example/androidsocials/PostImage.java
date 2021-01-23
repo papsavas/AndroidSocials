@@ -14,10 +14,16 @@ import android.widget.ImageView;
 import android.widget.ToggleButton;
 
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.ShareButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -67,6 +73,7 @@ public class PostImage extends AppCompatActivity {
                 twHandler.execute();
             }
 
+
         });
 
         instaButton.setOnClickListener(v-> {
@@ -103,23 +110,6 @@ public class PostImage extends AppCompatActivity {
         });*/
     }
 
-    /*private void postFBwithGraphAPI() {
-        GraphRequest request = null;
-        try {
-            AccessToken accessToken = AccessToken.getCurrentAccessToken();
-            if(!accessToken.getPermissions().contains(Arrays.asList("pages_read_engagement","pages_manage_posts"))) {
-                Log.d("PERMS", "~~~~~~~~NOT CONTAINED~~~~~~~~~~~~~~~~");
-                LoginManager.getInstance().logInWithPublishPermissions(this, Arrays.asList("pages_read_engagement","pages_manage_posts"));
-            }
-            request = GraphRequest.newPostRequest(
-                   accessToken,
-                    "/105083264804153/feed",
-                    new JSONObject("{\"message\":\"Awesome!\"}"),
-                    response -> Log.d("FB_SHARE", String.valueOf(response.getRawResponse())));
-            request.executeAsync();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }*/
+
 
 }

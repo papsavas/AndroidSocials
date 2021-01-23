@@ -7,18 +7,27 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.ShareButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 public class CreateStatus extends AppCompatActivity {
     TextInputEditText caption;
-    ShareButton fbButton;
+    Button fbButton;
     Button twitterButton;
 
     @Override
@@ -29,11 +38,17 @@ public class CreateStatus extends AppCompatActivity {
         fbButton = findViewById(R.id.fb_ShareBtn);
         twitterButton = findViewById(R.id.twitterBtn);
         IntentHandler intentHandler = new IntentHandler(CreateStatus.this);
-        /*SharePhotoContent sharePhotoContent = intentHandler.postToFacebook("text");
-        fbButton.setShareContent(sharePhotoContent);
-        */
+
+        //SharePhotoContent sharePhotoContent = intentHandler.postStatusToFacebook(Objects.requireNonNull(caption.getText()).toString());
+        //fbButton.setShareContent(sharePhotoContent);
+
         fbButton.setOnClickListener(v -> {
             copyText("fbStatus", caption);
+            try {
+                postFBStatus(caption.getText().toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         });
 
         twitterButton.setOnClickListener(v -> {
@@ -59,5 +74,25 @@ public class CreateStatus extends AppCompatActivity {
         ClipData clip = ClipData.newPlainText(label, str);
         clipboard.setPrimaryClip(clip);
         Toast.makeText(CreateStatus.this, "Status saved to clip board", Toast.LENGTH_SHORT).show();
+    }
+
+    public void postFBStatus(String status) throws JSONException {
+        AccessToken accessToken = new AccessToken(
+                "EAAF9L78UyMEBAL2k7t0YqZCHJ9SZAFffNfWIh2SjeZCqpOiAjDxNTgyXgzGjVnunQVdgGfn9mKroVQIzJ2jvWNPEdu18KqqXc9Bi4x30Yth2cuc87xBZCIfRyNMtRAZAWXNsx1n34kw4ocKCQUOGrh1vlihs1F8mzf3BZBrkyZB4NFJJg21pEPG",
+                "419118999455937",
+                "105083264804153",
+                null,null,null,null,null,null,null
+        );
+        GraphRequest request = GraphRequest.newPostRequest(
+                accessToken,
+                "/105083264804153/feed",
+                new JSONObject("{\"message\":\"" +status+ "  \"}"),
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+                        Log.d("fbStatus", response.toString());
+                    }
+                });
+        request.executeAsync();
     }
 }

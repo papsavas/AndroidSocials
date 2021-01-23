@@ -24,7 +24,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.facebook.share.widget.ShareButton
+    <Button
         android:id="@+id/fb_ShareBtn"
         android:layout_width="116dp"
         android:layout_height="53dp"

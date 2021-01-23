@@ -10,6 +10,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.facebook.share.Share;
+import com.facebook.share.internal.ShareFeedContent;
+import com.facebook.share.model.ShareContent;
+import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
 
@@ -46,6 +50,18 @@ public class IntentHandler {
                 .addPhoto(sharePhoto)
                 .build();
 
+
+    }
+
+    public SharePhotoContent postStatusToFacebook(String status){
+        SharePhoto sharePhoto = new SharePhoto.Builder()
+                .setBitmap(null)
+                .setCaption(status)
+                .build();
+
+        return new SharePhotoContent.Builder()
+                .addPhoto(sharePhoto)
+                .build();
 
     }
 
