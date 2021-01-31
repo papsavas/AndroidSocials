@@ -43,7 +43,6 @@ public class IntentHandler {
 
         SharePhoto sharePhoto = new SharePhoto.Builder()
                 .setBitmap(bi)
-                //.setCaption("Test Caption")
                 .build();
 
         return new SharePhotoContent.Builder()
@@ -53,19 +52,8 @@ public class IntentHandler {
 
     }
 
-    public SharePhotoContent postStatusToFacebook(String status){
-        SharePhoto sharePhoto = new SharePhoto.Builder()
-                .setBitmap(null)
-                .setCaption(status)
-                .build();
 
-        return new SharePhotoContent.Builder()
-                .addPhoto(sharePhoto)
-                .build();
-
-    }
-
-    public void instaStory(String imagePath){
+    public void instaIntent(String imagePath){
         File imgFile = new File(imagePath);
         Uri imgUri = Uri.fromFile(imgFile);
         Intent intent = activity.getPackageManager().getLaunchIntentForPackage("com.instagram.android");
@@ -85,11 +73,8 @@ public class IntentHandler {
             activity.startActivity(intent);
         }
     }
-    public void instaPost() {
 
-    }
-
-    public void launchTwitter(String text){
+    public void twitterIntent(String text){
         Intent tweetIntent = new Intent(Intent.ACTION_SEND);
         tweetIntent.putExtra(Intent.EXTRA_TEXT, text);
         tweetIntent.setType("text/plain");

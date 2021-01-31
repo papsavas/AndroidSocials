@@ -2,6 +2,8 @@ package com.example.androidsocials;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -11,19 +13,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.ShareButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -60,7 +57,7 @@ public class PostImage extends AppCompatActivity {
 
         twitterBtn.setOnClickListener(v -> {
             if(storyMode.isChecked()){
-                //intentHandler.launchTwitter(captionText);
+                intentHandler.twitterIntent("Απεργία fleet μέχρι να τα βγάλουν");
             }
             else{
                 TwitterHandler twHandler = new TwitterHandler(
@@ -79,12 +76,12 @@ public class PostImage extends AppCompatActivity {
         instaButton.setOnClickListener(v-> {
             if(storyMode.isChecked()){
                 Log.d("INSTA", "Insta Story");
-                intentHandler.instaStory(imagePath);
             }
             else{
                 Log.d("INSTA", "Insta Post");
 
             }
+            intentHandler.instaIntent(imagePath);
         });
 
         storyMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -103,11 +100,25 @@ public class PostImage extends AppCompatActivity {
 
         SharePhotoContent sharePhotoContent = intentHandler.postPictureToFacebook(imagePath);
         fbShareButton.setShareContent(sharePhotoContent);
-/*
-        fbShareButton.setOnClickListener(v->{
-            intentHandler.postPictureToFacebook(imagePath);
 
-        });*/
+        fbShareButton.setOnClickListener(v->{
+            copyText("FB_POST", caption);
+        });
+    }
+
+    public void copyText(String label, TextInputEditText caption){
+        if(caption.getText() == null)
+            Toast.makeText(PostImage.this, "You need to add a status", Toast.LENGTH_LONG);
+        else{
+            copyToClipBoard(label, caption.getText().toString());
+        }
+    }
+
+    private void copyToClipBoard(String label, String str) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(label, str);
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(PostImage.this, "Status saved to clip board", Toast.LENGTH_SHORT).show();
     }
 
 

@@ -40,13 +40,13 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
-
     FloatingActionButton uploadBtn;
     FloatingActionButton cameraBtn;
     FloatingActionButton postButton;
     FloatingActionButton searchButton;
     public static final int LAUNCH_CAMERA_CODE = 502;
     public static final int IMPORT_IMAGE_CODE = 501;
+    public static final String IMAGE_NAME = "imageBitmap";
     public static final String MOVE_IMAGE = "moveitpls";
     private LoginButton fbLogInBtn;
     private CallbackManager callbackManager;
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         searchButton.setOnClickListener(v -> {
-            Log.d("SEARCH", "SEARCH TWEETS");
+            Toast.makeText(MainActivity.this, "Payed feature, unlock with high grade", Toast.LENGTH_LONG);
         });
 
         uploadBtn.setOnClickListener(v -> {
@@ -166,26 +166,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         callbackManager.onActivityResult(requestCode,resultCode,data);
         super.onActivityResult(requestCode, resultCode, data);
-/*
-        GraphRequest graphRequest = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
-                (object, response) -> Log.d("GRAPH_ON_COMPLETED", "onCompleted: "+object.toString()));
-
-        Bundle bundle = new Bundle();
-        bundle.putString("fields", "name");
-
-        graphRequest.setParameters(bundle);
-        graphRequest.executeAsync();
-*/
 
         Bitmap bitmap;
         switch (requestCode){
-            case IMPORT_IMAGE_CODE: case LAUNCH_CAMERA_CODE:{
+            case IMPORT_IMAGE_CODE: {
                 if(resultCode == RESULT_OK) {
+                    assert data != null;
                     Uri imageUri = data.getData();
+                    Intent i = new Intent(MainActivity.this, PostImage.class);
+                    final String imageName = IMAGE_NAME;
                     try {
                         bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                        Intent i = new Intent(MainActivity.this, PostImage.class);
-                        final String imageName="imageBitmap";
                         File file = new File(Environment.getExternalStorageDirectory() +"/" +imageName + ".png");
                         FileOutputStream fOut = new FileOutputStream(file);
                         bitmap.compress(Bitmap.CompressFormat.PNG, 85, fOut);
@@ -196,8 +187,30 @@ public class MainActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
+                break;
                 }
+            }
+
+            case LAUNCH_CAMERA_CODE: {
+                if(resultCode == RESULT_OK){
+                    assert data != null;
+                    Bundle extras = data.getExtras();
+                    bitmap = (Bitmap) extras.get("data");
+                    Intent i = new Intent(MainActivity.this, PostImage.class);
+                    final String imageName = IMAGE_NAME;
+                    try {
+                        File file = new File(Environment.getExternalStorageDirectory() +"/" +imageName + ".png");
+                        FileOutputStream fOut = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 85, fOut);
+                        fOut.flush();
+                        fOut.close();
+                        i.putExtra(MOVE_IMAGE,imageName);
+                        startActivity(i);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
             }
             default:{
                 bitmap=null;

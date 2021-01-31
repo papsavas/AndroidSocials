@@ -4,26 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.model.SharePhotoContent;
-import com.facebook.share.widget.ShareButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.lang.reflect.Method;
-import java.util.Objects;
 
 public class CreateStatus extends AppCompatActivity {
     TextInputEditText caption;
@@ -56,7 +47,7 @@ public class CreateStatus extends AppCompatActivity {
             if(caption.getText() == null)
                 Toast.makeText(CreateStatus.this, "You need to add a status", Toast.LENGTH_LONG);
             else
-                intentHandler.launchTwitter(caption.getText().toString());
+                intentHandler.twitterIntent(caption.getText().toString());
         });
     }
 
