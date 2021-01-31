@@ -81,7 +81,7 @@ public class CreateStatus extends AppCompatActivity {
                 new GraphRequest.Callback() {
                     @Override
                     public void onCompleted(GraphResponse response) {
-                        Toast.makeText(CreateStatus.this, "Status Posting Completed!", Toast.LENGTH_LONG);
+                        Toast.makeText(CreateStatus.this, "Status Posting Completed!", Toast.LENGTH_LONG).show();
                     }
                 });
         request.executeAsync();

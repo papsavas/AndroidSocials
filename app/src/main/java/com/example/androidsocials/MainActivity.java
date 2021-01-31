@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         searchButton.setOnClickListener(v -> {
-            Toast.makeText(MainActivity.this, "Payed feature, unlock with high grade", Toast.LENGTH_LONG);
+            Toast.makeText(MainActivity.this, "Payed feature, unlock with high grade", Toast.LENGTH_LONG).show();
         });
 
         uploadBtn.setOnClickListener(v -> {

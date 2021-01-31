@@ -2,6 +2,7 @@ package com.example.androidsocials;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.graphics.Bitmap;
@@ -35,6 +36,7 @@ public class PostImage extends AppCompatActivity {
     public static String captionText;
     IntentHandler intentHandler;
 
+    @SuppressLint("ShowToast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +69,9 @@ public class PostImage extends AppCompatActivity {
                         getString(R.string.twitter_access_token_secret)
                 );
                 captionText = Objects.requireNonNull(caption.getText()).toString();
+                Toast.makeText(PostImage.this, "Posting on Twitter...", Toast.LENGTH_LONG).show();
                 twHandler.execute();
+
             }
 
 
@@ -108,7 +112,7 @@ public class PostImage extends AppCompatActivity {
 
     public void copyText(String label, TextInputEditText caption){
         if(caption.getText() == null)
-            Toast.makeText(PostImage.this, "You need to add a status", Toast.LENGTH_LONG);
+            Toast.makeText(PostImage.this, "You need to add a status", Toast.LENGTH_LONG).show();
         else{
             copyToClipBoard(label, caption.getText().toString());
         }

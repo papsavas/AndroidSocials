@@ -39,7 +39,7 @@ public class TwitterHandler extends AsyncTask<String, Void, Twitter> {
         Twitter twitter = tf.getInstance();
         try {
             File file = new File(PostImage.imagePath);
-            StatusUpdate status = new StatusUpdate(String.valueOf(new Date().getTime()));
+            StatusUpdate status = new StatusUpdate(PostImage.captionText);
             status.setMedia(file); // set the image to be uploaded here.
             twitter.updateStatus(status);
         } catch (TwitterException e) {
@@ -53,12 +53,5 @@ public class TwitterHandler extends AsyncTask<String, Void, Twitter> {
     @Override
     protected void onPostExecute(Twitter twitter) {
         Log.d("TWITTER_STATUS", String.valueOf(twitter));
-        /*
-        File file = new File(PostImage.imagePath);
-        StatusUpdate status = new StatusUpdate("testing #blessed");
-        status.setMedia(file); // set the image to be uploaded here.
-        */
-
-
     }
 }
