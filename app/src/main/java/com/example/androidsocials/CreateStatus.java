@@ -47,7 +47,7 @@ public class CreateStatus extends AppCompatActivity {
             if(caption.getText() == null)
                 Toast.makeText(CreateStatus.this, "You need to add a status", Toast.LENGTH_LONG);
             else
-                intentHandler.twitterIntent(caption.getText().toString());
+                intentHandler.twitterTextIntent(caption.getText().toString());
         });
     }
 

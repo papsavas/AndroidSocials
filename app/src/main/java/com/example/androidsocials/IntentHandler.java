@@ -62,7 +62,7 @@ public class IntentHandler {
             shareIntent.setAction(Intent.ACTION_SEND);
             shareIntent.setPackage("com.instagram.android");
             shareIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
-            shareIntent.setType("image/jpeg");
+            shareIntent.setType("image/*");
             activity.startActivity(shareIntent);
         } else {
             // bring user to the market to download the app.
@@ -74,7 +74,28 @@ public class IntentHandler {
         }
     }
 
-    public void twitterIntent(String text){
+    public void twitterPictureIntent(String imagePath){
+        File imgFile = new File(imagePath);
+        Uri imgUri = Uri.fromFile(imgFile);
+        Intent intent = activity.getPackageManager().getLaunchIntentForPackage("com.twitter.android");
+        if (intent != null) {
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.setPackage("com.twitter.android");
+            shareIntent.putExtra(Intent.EXTRA_STREAM, imgUri);
+            shareIntent.setType("image/*");
+            activity.startActivity(shareIntent);
+        } else {
+            // bring user to the market to download the app.
+            // or let them choose an app
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("market://details?id=" + "com.twitter.android"));
+            activity.startActivity(intent);
+        }
+    }
+
+    public void twitterTextIntent(String text){
         Intent tweetIntent = new Intent(Intent.ACTION_SEND);
         tweetIntent.putExtra(Intent.EXTRA_TEXT, text);
         tweetIntent.setType("text/plain");

@@ -59,7 +59,7 @@ public class PostImage extends AppCompatActivity {
 
         twitterBtn.setOnClickListener(v -> {
             if(storyMode.isChecked()){
-                intentHandler.twitterIntent("Απεργία fleet μέχρι να τα βγάλουν");
+                intentHandler.twitterPictureIntent(imagePath);
             }
             else{
                 TwitterHandler twHandler = new TwitterHandler(
